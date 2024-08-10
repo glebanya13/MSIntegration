@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+
+.app {
+  text-align: center;
+  width: 100%;
+  max-width: 460px;
+  padding: 20px;
+  padding-bottom: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app h1 {
+  font-size: 36px;
+  color: #000;
+  margin-bottom: 20px;
+}
+
+.app p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.input-field {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+  outline: none;
+}
+
+.login-button,
+.submit-button {
+  background-color: #2855AF;
+  color: white;
+  padding: 14px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 10px;
+  outline: none;
+}
+
+.login-button {
+  background-color: #2855AF;
+}
+
+.login-button:hover {
+  background-color: #254EDB;
+}
+
+.submit-button {
+  background-color: #28a745;
+}
+
+.submit-button:hover {
+  background-color: #218838;
+}
+
+.data-container {
+  width: 100%;
+  max-width: 460px;
+  padding: 20px;
+  text-align: left;
+  overflow-x: auto;
+}
+
+.data-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #000;
+  text-align: center;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.report-table th,
+.report-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+.report-table th {
+  background-color: #f0f0f0;
+  font-weight: 700;
+}
+
+.report-form {
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.report-form h3 {
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: #000;
+}
+
+.positive {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.negative {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .app {
+    padding: 10px;
+    padding-bottom: 80px;
+  }
+}

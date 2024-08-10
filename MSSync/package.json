@@ -1,0 +1,20 @@
+{
+  "name": "mssync",
+  "version": "1.0.0",
+  "description": "MSIntegration is a versatile toolset designed to streamline business operations and providing additional scripts for various automation tasks.",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "keywords": [],
+  "author": "glebanya13",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.3",
+    "dotenv": "^16.4.5",
+    "pino": "^9.3.2",
+    "pino-pretty": "^11.2.2",
+    "uuid": "^10.0.0"
+  }
+}
