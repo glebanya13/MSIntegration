@@ -41,6 +41,32 @@ body {
   margin-bottom: 30px;
 }
 
+.input-mode-selector {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.input-mode-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.input-mode-button.active {
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+}
+
+.input-mode-button:hover {
+  background-color: #e0e0e0;
+}
+
 .input-field {
   width: 100%;
   max-width: 400px;
@@ -51,6 +77,35 @@ body {
   font-size: 16px;
   font-family: 'Montserrat', sans-serif;
   outline: none;
+}
+
+.file-upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-input-label {
+  font-size: 16px;
+  color: #007bff;
 }
 
 .login-button,

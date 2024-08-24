@@ -3,13 +3,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { firebaseConfig } from './config'
+import { process } from './libs/process';
+import { upload } from './libs/upload';
 import './App.css';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
-const WEB_APP_URL = '';
 
 const App = () => {
     const [username, setUsername] = useState('');
@@ -19,7 +19,10 @@ const App = () => {
     const [articles, setArticles] = useState([]);
     const [selectedArticle, setSelectedArticle] = useState('');
     const [amount, setAmount] = useState('');
+    const [amounts, setAmounts] = useState([]);
     const [processing, setProcessing] = useState(false);
+    const [image, setImage] = useState(null);
+    const [inputMode, setInputMode] = useState('manual');
 
     useEffect(() => {
         const handleResize = () => {
@@ -93,25 +96,42 @@ const App = () => {
         const newRow = { username, date, amount, article: selectedArticle, timestamp };
 
         try {
-            await addDoc(collection(db, "reports"), newRow);
+            if (inputMode === 'manual') {
+                const newRow = { username, date, amount, article: selectedArticle, timestamp };
 
-            await fetch(WEB_APP_URL, {
-                redirect: "follow",
-                method: "POST",
-                body: JSON.stringify(newRow),
-                headers: {
-                    "Content-Type": "text/plain;charset=utf-8",
-                },
-            });
+                await addDoc(collection(db, "reports"), newRow);
+
+                await upload(newRow);
+
+            } else if (inputMode === 'photo') {
+                const processedAmounts = await process(image);
+
+                for (const amount of processedAmounts) {
+                    const newRow = { username, date, amount, article: selectedArticle, timestamp };
+
+                    await addDoc(collection(db, "reports"), newRow);
+
+                    await upload(newRow);
+                }
+
+                setAmounts(processedAmounts);
+                setImage(null);
+            }
 
             setAmount('');
             setSelectedArticle('');
-
             fetchData();
         } catch (error) {
-            console.error('Error submitting data:', error);
+            console.error('Error processing image:', error);
         } finally {
             setProcessing(false);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImage(file);
         }
     };
 
@@ -151,17 +171,45 @@ const App = () => {
                 </div>
             ) : (
                 <div className="data-container">
+                    <div className="input-mode-selector">
+                        <button
+                            className={`input-mode-button ${inputMode === 'manual' ? 'active' : ''}`}
+                            onClick={() => setInputMode('manual')}
+                        >
+                            Вручную
+                        </button>
+                        <button
+                            className={`input-mode-button ${inputMode === 'photo' ? 'active' : ''}`}
+                            onClick={() => setInputMode('photo')}
+                        >
+                            Фото
+                        </button>
+                    </div>
+
                     <form className="report-form" onSubmit={handleSubmit}>
                         <h3>Заполнить отчёт</h3>
-                        <input
-                            type="text"
-                            placeholder="Сумма"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            onFocus={handleFocus}
-                            className="input-field"
-                            required
-                        />
+                        {inputMode === 'manual' ? (
+                            <input
+                                type="text"
+                                placeholder="Сумма"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                onFocus={handleFocus}
+                                className="input-field"
+                                required
+                            />
+                        ) : (
+                            <label className="file-upload">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    className="file-input"
+                                    required
+                                />
+                                <span className="file-input-label">Выберите фото</span>
+                            </label>
+                        )}
                         <select
                             value={selectedArticle}
                             onChange={(e) => setSelectedArticle(e.target.value)}
@@ -174,32 +222,34 @@ const App = () => {
                                 <option key={index} value={article}>{article}</option>
                             ))}
                         </select>
-                        <button className="submit-button" type="submit" disabled={processing}>Отправить</button>
+                        <button className="submit-button" type="submit" disabled={processing || (inputMode === 'photo' && !image)}>
+                            Отправить
+                        </button>
                     </form>
-                    {
-                        data && data.length !== 0 ?
-                            <div>
-                                <h2>Отчёт за последние 7 дней</h2>
-                                <table className="report-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Дата</th>
-                                            <th>Сумма</th>
-                                            <th>Справочник</th>
+
+                    {data && data.length !== 0 ? (
+                        <div>
+                            <h2>Отчёт за последние 7 дней</h2>
+                            <table className="report-table">
+                                <thead>
+                                    <tr>
+                                        <th>Дата</th>
+                                        <th>Сумма</th>
+                                        <th>Справочник</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data.map((row, index) => (
+                                        <tr key={index}>
+                                            <td>{row.date}</td>
+                                            <td style={getAmountStyle(Number(row.amount))}>{row.amount}</td>
+                                            <td>{row.article}</td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {data && data.map((row, index) => (
-                                            <tr key={index}>
-                                                <td>{row.date}</td>
-                                                <td style={getAmountStyle(Number(row.amount))}>{row.amount}</td>
-                                                <td>{row.article}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div> : <div></div>
-                    }
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : <div></div>}
                 </div>
             )}
         </div>
